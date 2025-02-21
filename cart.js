@@ -21,15 +21,25 @@
 // print()
 // Выводит в консоль JSON строку из массива items и на следующей строке выводит общую стоимость корзины
 
+// Продолжим работу с cart.js
+// Обнаружена уязвимость в нашем функционале
+// Если после добавления последнего товара присвоить к totalPrice любое значение,
+// например
+// cart.totalPrice = 10;
+// то при выводе print() общая стоимость корзины будет равна 10
+// Чтобы это предотвратить, необходимо свойство totalPrice сделать геттером который будет возвращать результат вызова метода calculateItemPrice
+// метод getTotalPrice больше не нужен
+// calculateItemPrice переделать таким образом, чтобы сумму он возвращал, а не записывал в свойство totalPrice
+// Вызов метода calculateItemPrice оставить только у геттера totalPrice
+
 
 
 const cart = {
     items: [], // items = пустой массив - это товары
-    totalPrice: 0, // totalPrice = 0 - общая стоимость корзины
+    get totalPrice() {
+        return this.calculateItemPrice;
+    }, 
     count: 0, // count = 0 - количество товаров
-    getTotalPrice() { // getTotalPrice - получить общую стоимость товаров
-        return this.totalPrice;
-    },
     add(productName, priceGoods, quantityGoods = 1) { // add - добавить товар
         const item = {
             productName,
@@ -38,25 +48,22 @@ const cart = {
         };
         this.items.push(item);
         this.increaseCount(quantityGoods);
-        this.calculateItemPrice(priceGoods);
     },
     increaseCount(number) { // increaseCount - увеличить количество товаров
         return this.count += number;
     },
     calculateItemPrice() { // calculateItemPrice - посчитать общую стоимость товаров
-        this.totalPrice = this.items.reduce((sum, item) => {
+        return this.items.reduce((sum, item) => {
             return sum + (item.priceGoods * item.quantityGoods);
         }, 0);
-        return this.totalPrice;
     },
     clear() { // clear - очистить корзину
         this.items = []; 
-        this.totalPrice = 0; 
         this.count = 0; 
     },
     print() { // print - распечатать корзину
         console.log(JSON.stringify(this.items));
-        console.log(`Total Price: ${this.getTotalPrice()}`);
+        console.log(`Total Price: ${this.totalPrice()}`);
     },
 };
 
